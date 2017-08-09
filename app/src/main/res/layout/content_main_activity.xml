@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.percent.PercentRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/headerView"
+            android:layout_width="match_parent"
+            app:layout_heightPercent="55%">
+
+            <ImageView
+                android:id="@+id/album_art"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/music_bg"
+                android:scaleType="centerCrop"
+                android:src="@drawable/music_bg" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/gradient" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:gravity="center_horizontal|center_vertical"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/_10sdp"
+                android:paddingRight="@dimen/_10sdp"
+                android:paddingTop="@dimen/_80sdp">
+
+                <TextView
+                    android:gravity="center"
+                    android:id="@+id/song_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="Allah Hoo Allah Hoo"
+                    android:textColor="#ffffff"
+                    android:textSize="@dimen/_22sdp" />
+
+                <TextView
+                    android:id="@+id/song_artist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:paddingTop="3dp"
+                    android:text="Nusrat Fateh Ali Khan"
+                    android:textColor="#ffffff"
+                    android:textSize="@dimen/_12sdp" />
+
+                <SeekBar
+                    android:id="@+id/song_progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginRight="6dp"
+                    android:maxHeight="2dp"
+                    android:paddingTop="18dp"
+                    android:progress="0"
+                    android:tag="tint_accent_color" />
+
+
+                <TextView
+                    android:id="@+id/song_album"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#ffffff"
+                    android:visibility="gone" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/song_elapsed_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:paddingLeft="25dp"
+                        android:text="01:30"
+                        android:textColor="#ffffff" />
+
+                    <TextView
+                        android:id="@+id/song_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:paddingRight="25dp"
+                        android:text="04:30"
+                        android:textColor="#ffffff" />
+
+                </RelativeLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingTop="20dp">
+
+                    <net.steamcrafted.materialiconlib.MaterialIconView
+                        android:id="@+id/previous"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="0.7"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:paddingLeft="50dp"
+                        android:scaleType="center"
+                        app:materialIcon="skip_previous"
+                        app:materialIconColor="#fff"
+                        app:materialIconSize="35dp" />
+
+                    <FrameLayout
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1">
+
+                        <com.example.myapplication.views.PlayPauseButton
+                            android:id="@+id/playpause"
+                            android:layout_width="23dp"
+                            android:layout_height="23dp"
+                            android:layout_gravity="center" />
+
+                        <View
+                            android:id="@+id/playpausewrapper"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="?attr/selectableItemBackgroundBorderless" />
+
+                    </FrameLayout>
+
+                    <net.steamcrafted.materialiconlib.MaterialIconView
+                        android:id="@+id/next"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="0.7"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:paddingRight="50dp"
+                        android:scaleType="center"
+                        app:materialIcon="skip_next"
+                        app:materialIconColor="#fff"
+                        app:materialIconSize="35dp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:background="@android:color/transparent"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+        </FrameLayout>
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/song_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/headerView"
+            android:background="@color/bg"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:paddingTop="18dp" />
+
+    </android.support.percent.PercentRelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:visibility="gone"
+        android:id="@+id/shuffle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:scaleType="centerInside"
+        android:tag="bg_tint_accent_color"
+        android:src="@drawable/ic_shuffle_white_48dp"
+        app:layout_anchor="@id/headerView"
+        app:layout_anchorGravity="bottom|right|end" />
+
+</android.support.design.widget.CoordinatorLayout>
