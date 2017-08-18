@@ -1,414 +1,224 @@
 package com.example.myapplication.activity;
 
-import android.annotation.TargetApi;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.graphics.Typeface;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.PowerManager;
-import android.support.design.widget.NavigationView;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.myapplication.R;
-import com.example.myapplication.adapter.SongsListAdapter;
-import com.example.myapplication.model.SongsDataModel;
-import com.example.myapplication.util.DownloadingSong;
-import com.example.myapplication.util.JsonReader;
-import com.example.myapplication.util.Utilities;
-import com.example.myapplication.views.PlayPauseButton;
-import com.example.myapplication.views.SongListListner;
-import com.jaeger.library.StatusBarUtil;
-
-import net.steamcrafted.materialiconlib.MaterialIconView;
+import com.example.myapplication.data.MediaFolder;
+import com.example.myapplication.fragment.FolderDetailFragment;
+import com.example.myapplication.fragment.FolderFragment;
+import com.example.myapplication.util.AlertDialogHelper;
+import com.example.myapplication.util.ParseFolder;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Created by Administrator on 8/16/2017.
+ */
 
-public class MainActivity extends BaseActivity implements SeekBar.OnSeekBarChangeListener, MediaPlayer.OnCompletionListener, View.OnClickListener, SongListListner {
-    private DrawerLayout mDrawerLayout;
-    private Toolbar mToolbar;
-    private int mAlpha = StatusBarUtil.DEFAULT_STATUS_BAR_ALPHA;
+public class MainActivity extends AppCompatActivity implements AlertDialogHelper.AlertDialogListener {
+
+    public ActionMode mActionMode;
+    public Menu context_menu;
+    public Menu mActivityMenu;
+
+    public boolean isMultiSelect = false;
+    public FragmentManager mFragmentManager;
+    public FragmentTransaction mFragmentTransaction;
+    public AlertDialogHelper alertDialogHelper;
 
 
-    private PlayPauseButton iconPlay;
-    private MaterialIconView btnNext;
-    private MaterialIconView btnPrevious;
-    private SeekBar songProgressBar;
-    private TextView songTitleLabel;
-    private TextView songArtistLabel;
-    private View btnPlay;
+    public List<MediaFolder> folderList = new ArrayList<>();
+    public List<String> selectedFolderList = new ArrayList<>();
+    public FolderFragment mFolderFragment;
+    public FolderDetailFragment mFolderDetailFragment;
 
 
-    private MediaPlayer mp;
-    private Handler mHandler = new Handler();
-    private Utilities utils;
-    private List<SongsDataModel> songsList;
-    private SongsListAdapter adapter;
-    private RecyclerView recyclerView;
-    int currentSongIndex = 0;
-    int[] totalDonwloadSize;
-    NavigationView mainNavigationMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        alertDialogHelper = new AlertDialogHelper(this);
 
-        //Save Path defined to app directory
-        Utilities.Path = Environment.getExternalStorageDirectory() + "/Android/data/com.example.myapplication/songs";
+        //Initialize Home fragment here
+        mFragmentManager = getSupportFragmentManager();
+        mFragmentTransaction = mFragmentManager.beginTransaction();
+        mFragmentTransaction.replace(R.id.container, new FolderFragment().getInstance(this)).commit();
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+    }
 
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close);
-        mDrawerLayout.setDrawerListener(toggle);
-        toggle.syncState();
-
-        //Set Transparent Toolbar here
-        mAlpha = 0;
-        StatusBarUtil.setTranslucentForDrawerLayout(MainActivity.this, mDrawerLayout, mAlpha);
-        mToolbar.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-        initializeViews();
-
-        mainNavigationMenu = (NavigationView) findViewById(R.id.navigation);
-        mainNavigationMenu.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
-
-                switch (menuItem.getItemId()) {
-                    case R.id.nav_all:
-                        getSongsList();
-                        break;
-                    case R.id.nav_downloaded:
-                        getDownloadList();
-                        break;
-                }
-
-                mDrawerLayout.closeDrawers();
-
-                return true;
-            }
-        });
+    public void fragmentReplace(Fragment fragment) {
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+        if (!(fragment instanceof FolderFragment)) {
+            fragmentTransaction.addToBackStack(null);
+        }
+        fragmentTransaction.replace(R.id.container, fragment).commit();
     }
 
     @Override
-    protected void setStatusBar() {
-        //mStatusBarColor = getResources().getColor(R.color.colorPrimary);
-        //StatusBarUtil.setColorForDrawerLayout(this, (DrawerLayout) findViewById(R.id.drawer_layout), mStatusBarColor, mAlpha);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_common_activity, menu);
+
+        mActivityMenu = menu;
+
+
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        switch (id) {
             case android.R.id.home:
                 onBackPressed();
+                return true;
+            case R.id.action_settings:
 
-        }
-        return false;
-    }
+                return true;
 
-    public void getSongsList() {
-        songsList = JsonReader.getSongList(this);
+            case R.id.action_refresh:
 
-        totalDonwloadSize = new int[songsList.size()];
-        for (int i = 0; i < totalDonwloadSize.length; i++) {
-            totalDonwloadSize[i] = 0;
-        }
-
-        adapter = new SongsListAdapter(this, songsList, this, totalDonwloadSize);
-        recyclerView = (RecyclerView) findViewById(R.id.song_recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-    }
-
-    public void getDownloadList() {
-
-        List<SongsDataModel> downloadList = new ArrayList<>();
-
-        for (int i = 0; i < songsList.size(); i++) {
-            if (Utilities.checkIsFileExit(songsList.get(i).getTitle().replaceAll("\\s+$", "") + ".mp3")) {
-                downloadList.add(songsList.get(i));
-            }
-        }
-        if (downloadList.size() > 0) {
-
-            songsList = downloadList;
-            adapter = new SongsListAdapter(this, songsList, this, totalDonwloadSize);
-            recyclerView.setAdapter(adapter);
-        } else {
-            Toast.makeText(this, "No downloaded songs found", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void initializeViews() {
-        // All player buttons
-        iconPlay = (PlayPauseButton) findViewById(R.id.playpause);
-        btnNext = (MaterialIconView) findViewById(R.id.next);
-        btnPrevious = (MaterialIconView) findViewById(R.id.previous);
-        songProgressBar = (SeekBar) findViewById(R.id.song_progress);
-        songTitleLabel = (TextView) findViewById(R.id.song_title);
-        songArtistLabel = (TextView) findViewById(R.id.song_artist);
-        btnPlay = (View) findViewById(R.id.playpausewrapper);
-
-        // Mediaplayer
-        mp = new MediaPlayer();
-        utils = new Utilities();
-        songsList = new ArrayList<>();
-        iconPlay.setColor(ContextCompat.getColor(this, android.R.color.white));
-
-
-        btnPlay.setOnClickListener(this);
-        btnNext.setOnClickListener(this);
-        btnPrevious.setOnClickListener(this);
-        songProgressBar.setOnSeekBarChangeListener(this);
-        mp.setOnCompletionListener(this);
-
-        getSongsList();
-
-
-        Typeface face = Typeface.createFromAsset(getAssets(),
-                "Roboto_Light.ttf");
-        songTitleLabel.setTypeface(face);
-        songArtistLabel.setTypeface(face);
-    }
-
-    public void updatePlayPauseButton(boolean isPlaying) {
-        iconPlay.setPlayed(isPlaying);
-        iconPlay.startAnimation();
-
-        if (isPlaying) {
-            adapter.currentlyPlayingPosition = currentSongIndex;
-            adapter.notifyDataSetChanged();
-        } else {
-            adapter.currentlyPlayingPosition = -1;
-            adapter.notifyDataSetChanged();
-        }
-
-    }
-
-    public void playListSong(int songIndex) {
-        // Play song
-        try {
-
-
-            final ProgressDialog progressDialog = new ProgressDialog(this, AlertDialog.THEME_HOLO_DARK);
-            progressDialog.setMessage("Loading audio...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-
-            mp.stop();
-            mp.reset();
-            mp.release();
-
-
-            //set player properties
-            mp = new MediaPlayer();
-            mp.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
-            mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-            if (Utilities.checkIsFileExit(songsList.get(songIndex).getTitle().replaceAll("\\s+$", "") + ".mp3")) {
-                File file1 = new File(Utilities.Path + "/" + songsList.get(songIndex).getTitle().replaceAll("\\s+$", "") + ".mp3");
-                mp.setDataSource(file1.getPath());
-
-            } else {
-                mp.setDataSource(songsList.get(songIndex).getPath());
-
-            }
-            mp.prepareAsync();
-
-
-            //mp3 will be started after completion of preparing...
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-
-                @Override
-                public void onPrepared(MediaPlayer player) {
-                    player.start();
-                    progressDialog.dismiss();
+                if (mFolderFragment != null) {
+                    mFolderFragment.findVideoDataList();
                 }
 
-            });
+                //for folder detail item reomve
+                if (mFolderDetailFragment != null) {
+                    mFolderDetailFragment.findVideoDataList(mFolderDetailFragment.path);
+                }
 
 
-            // Displaying Song title
-            String songTitle = songsList.get(songIndex).getTitle();
-            songTitleLabel.setText(songTitle);
-
-            updatePlayPauseButton(true);
-            // set Progress bar values
-            songProgressBar.setProgress(0);
-            songProgressBar.setMax(100);
-            // Updating progress bar
-            updateProgressBar();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+                return true;
+            case R.id.action_exit:
+                return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
 
-    public void updateProgressBar() {
-        mHandler.postDelayed(mUpdateTimeTask, 100);
-    }
+    public ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.menu_multi_select, menu);
+            context_menu = menu;
+            return true;
+        }
 
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false; // Return false if nothing is done
+        }
 
-    private Runnable mUpdateTimeTask = new Runnable() {
-        public void run() {
-            try {
-                long totalDuration = mp.getDuration();
-                long currentDuration = mp.getCurrentPosition();
-                int progress = (int) (utils.getProgressPercentage(currentDuration, totalDuration));
-                songProgressBar.setProgress(progress);
-                mHandler.postDelayed(this, 100);
-            } catch (Exception e) {
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.action_delete:
+                    alertDialogHelper.showAlertDialog("", "Delete Contact", "DELETE", "CANCEL", 1, false);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+            isMultiSelect = false;
+            if (mFolderFragment != null) {
+                mFolderFragment.findVideoDataList();
+                mFolderFragment.isMultiSelect=false;
+            }
+            //for folder detail item reomve
+            if (mFolderDetailFragment != null) {
+                mFolderDetailFragment.findVideoDataList(mFolderDetailFragment.path);
+                mFolderDetailFragment.isMultiSelect=false;
             }
         }
     };
 
 
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
 
-    }
+    // AlertDialog Callback Functions
 
     @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-        mHandler.removeCallbacks(mUpdateTimeTask);
-    }
+    public void onPositiveClick(int from) {
+        if (from == 1) {
+            //Now Delete the folder whole
+            if (selectedFolderList.size() > 0) {
+                ParseFolder folder = new ParseFolder();
 
+                if (mFolderFragment != null) {
+                    for (int i = 0; i < selectedFolderList.size(); i++) {
+                        folderList.remove(selectedFolderList.get(i));
+                        folder.deleteFolder(this, selectedFolderList.get(i));
+                    }
+                    mFolderFragment.findVideoDataList();
+                }
 
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-        mHandler.removeCallbacks(mUpdateTimeTask);
-        int totalDuration = mp.getDuration();
-        int currentPosition = utils.progressToTimer(seekBar.getProgress(), totalDuration);
-        mp.seekTo(currentPosition);
-        updateProgressBar();
-    }
+                //for folder detail item reomve
+                if (mFolderDetailFragment != null) {
+                    ParseFolder parseFolder=new ParseFolder();
+                    for (int i = 0; i < selectedFolderList.size(); i++) {
+                        parseFolder.deleteViaContentProvider(this,selectedFolderList.get(i));
+                    }
+                    mFolderDetailFragment.findVideoDataList(mFolderDetailFragment.path);
+                }
 
-    @Override
-    public void onCompletion(MediaPlayer arg0) {
-        if (songProgressBar.getProgress() == 100) {
-            if (currentSongIndex < songsList.size()) {
-                currentSongIndex++;
-                playListSong(currentSongIndex);
-            } else {
-                adapter.currentlyPlayingPosition = -1;
-                adapter.notifyDataSetChanged();
-                Toast.makeText(this, "No more Songs", Toast.LENGTH_SHORT).show();
+                if (mActionMode != null) {
+                    mActionMode.finish();
+                }
+                selectedFolderList.clear();
             }
-        }
 
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mp.release();
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.playpausewrapper:
-                if (mp.isPlaying()) {
-                    if (mp != null) {
-                        mp.pause();
-                        updatePlayPauseButton(false);
-                    }
-                } else {
-                    if (mp != null) {
-                        mp.start();
-                        updatePlayPauseButton(true);
-                    }
-                }
-
-                break;
-            case R.id.next:
-                if (songsList.size() > 1) {
-                    if (currentSongIndex < songsList.size()) {
-                        currentSongIndex++;
-                        playListSong(currentSongIndex);
-                    } else {
-                        Toast.makeText(this, "No more Songs", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(this, "No more Songs", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.previous:
-                if (currentSongIndex > 0) {
-                    currentSongIndex--;
-                    playListSong(currentSongIndex);
-                } else {
-                    currentSongIndex = 0;
-                    Toast.makeText(this, "No more Songs", Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
-    }
-
-    @Override
-    public void onSongClick(int pos) {
-        currentSongIndex = pos;
-        playListSong(currentSongIndex);
-
-    }
-
-    @Override
-    public void onDownloadClick(int pos) {
-
-        currentSongIndex = pos;
-
-        String fileName = songsList.get(currentSongIndex).getTitle().replaceAll("\\s+$", "");
-        String url = songsList.get(currentSongIndex).getPath();
-        if (!Utilities.checkIsFileExit(fileName)) {
-            DownloadingSong grabURL = new DownloadingSong();
-            grabURL.setData(adapter, pos, this, totalDonwloadSize);
-            StartAsyncTaskInParallel(grabURL, url, fileName + ".mp3");
-            Toast.makeText(this, "Added to Download basket", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Already Downloaded", Toast.LENGTH_SHORT).show();
+        } else if (from == 2) {
+            if (mActionMode != null) {
+                mActionMode.finish();
+            }
 
         }
     }
-
-    //Parrelel task in above api level 11
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private void StartAsyncTaskInParallel(DownloadingSong task, String url, String fileName) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            String[] params = new String[2];
-            params[0] = url;
-            params[1] = fileName;
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
-        } else
-            task.execute(url, fileName);
+    public void deleteDirectory(File file) {
+        if( file.exists() ) {
+            if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                for(int i=0; i<files.length; i++) {
+                    if(files[i].isDirectory()) {
+                        deleteDirectory(files[i]);
+                    }
+                    else {
+                        files[i].delete();
+                    }
+                }
+            }
+            file.delete();
+        }
     }
+    @Override
+    public void onNegativeClick(int from) {
+
+    }
+
+    @Override
+    public void onNeutralClick(int from) {
+
+    }
+
 
 }

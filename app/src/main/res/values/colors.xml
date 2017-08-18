@@ -1,9 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#037fd2</color>
+    <color name="colorPrimaryDark">#232228</color>
     <color name="colorAccent">#F8CE07</color>
     <color name="white">#ffffff</color>
-    <color name="bg">#232228</color>
+    <color name="bg">#efebeb</color>
     <color name="golden">#F8CE07</color>
+    <color name="red">#c60d2c</color>
+
+    <color name="black">#000000</color>
+    <color name="list_divider">#979797</color>
+    <color name="list_item_selected_state">#F4F6F6</color>
+    <color name="list_item_normal_state">@color/bg</color>
+
+    <color name="thumb_color">#353333</color>
+
+    <color name="player_background">#4a4a4a</color>
+    <color name="holo_light_primary">#000000</color>
+    <color name="background_holo_light">#000000</color>
+    <color name="white_light">#FFFFFF</color>
+    <color name="selectablecolor">#333333</color>
+    <color name="default_screen_bg">#f9f9f9</color>
+    <color name="rounded_container_bg">#222222</color>
+    <color name="rounded_container_border">#3b3f44</color>
+    <color name="light_gray_header_color">#646663</color>
 </resources>
