@@ -2,6 +2,7 @@ package tcking.github.com.giraffeplayer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -10,6 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -65,7 +67,7 @@ public class GiraffePlayer {
     private static final int MESSAGE_HIDE_CENTER_BOX = 4;
     private static final int MESSAGE_RESTART_PLAY = 5;
     private final Activity activity;
-    private final IjkVideoView videoView;
+    private IjkVideoView videoView;
     private final SeekBar seekBar;
     private final AudioManager audioManager;
     private final int mMaxVolume;
@@ -87,16 +89,34 @@ public class GiraffePlayer {
     private int screenWidthPixels;
 
 
-    private boolean isMp3Song = false;
-    private int currentListIndex;
+    public boolean isMp3Song = false;
+    public int currentListIndex;
     private List<SongModel> listSongs;
 
     private int pauseTimeMedia = 0;
 
-
+    int selectedPosition = 0;
     private final View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+
+            if (v.getId() == R.id.app_video_repeat) {
+                selectedPosition = SharedPref.getInt(activity, SharedPref.KEY_MY_SHARED_BOOLEAN);
+                CharSequence[] values = new CharSequence[]{"No", "Single", "All"};//0,1,2
+                new AlertDialog.Builder(activity)
+                        .setTitle("Repeat")
+                        .setSingleChoiceItems(values, selectedPosition, null)
+                        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dialog.dismiss();
+                                int selectedPosition = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
+                                SharedPref.save(activity, SharedPref.KEY_MY_SHARED_BOOLEAN, selectedPosition);
+                                updateRepeatButton();
+                            }
+                        })
+                        .show();
+            }
+
             if (v.getId() == R.id.app_video_fullscreen) {
                 toggleFullScreen();
             } else if (v.getId() == R.id.app_video_play) {
@@ -135,6 +155,19 @@ public class GiraffePlayer {
             }
         }
     };
+
+    private void updateRepeatButton() {
+        selectedPosition = SharedPref.getInt(activity, SharedPref.KEY_MY_SHARED_BOOLEAN);
+        if (selectedPosition == 0) {
+            $.id(R.id.app_video_repeat).image(R.drawable.ic_no_repeat);
+        } else if (selectedPosition == 1) {
+            $.id(R.id.app_video_repeat).image(R.drawable.ic_repeat_one_white_48dp);
+        } else {
+            $.id(R.id.app_video_repeat).image(R.drawable.ic_repeat_white_48dp);
+        }
+
+    }
+
     private boolean isShowing;
     private boolean portrait;
     private float brightness = -1;
@@ -149,13 +182,18 @@ public class GiraffePlayer {
     private Runnable oncomplete = new Runnable() {
         @Override
         public void run() {
-            if (currentListIndex < listSongs.size() - 1) {
-                currentListIndex++;
-                play(listSongs.get(currentListIndex).getDATA());
-            } else {
-                //currentListIndex = 0;
-
+            if (selectedPosition == 0) {
+                if (currentListIndex < listSongs.size() - 1) {
+                    currentListIndex++;
+                }
+            } else if (selectedPosition == 2) {
+                if (currentListIndex < listSongs.size() - 1) {
+                    currentListIndex++;
+                } else {
+                    currentListIndex = 0;
+                }
             }
+            play(listSongs.get(currentListIndex).getDATA());
         }
     };
     private OnInfoListener onInfoListener = new OnInfoListener() {
@@ -242,6 +280,8 @@ public class GiraffePlayer {
         $.id(R.id.app_video_seekBar).visibility(show ? View.VISIBLE : View.GONE);
         $.id(R.id.app_video_next).visibility(show ? View.VISIBLE : View.GONE);
         $.id(R.id.app_video_previous).visibility(show ? View.VISIBLE : View.GONE);
+        $.id(R.id.app_video_fullscreen).visibility(show ? View.VISIBLE : View.GONE);
+        $.id(R.id.app_video_repeat).visibility(show ? View.VISIBLE : View.GONE);
     }
 
 
@@ -330,46 +370,8 @@ public class GiraffePlayer {
         this.activity = activity;
         screenWidthPixels = activity.getResources().getDisplayMetrics().widthPixels;
         $ = new Query(activity);
-        videoView = (IjkVideoView) activity.findViewById(R.id.video_view);
-        videoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(IMediaPlayer mp) {
-                statusChange(STATUS_COMPLETED);
-                oncomplete.run();
-            }
-        });
-        videoView.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(IMediaPlayer mp, int what, int extra) {
-                statusChange(STATUS_ERROR);
-                onErrorListener.onError(what, extra);
-                return true;
-            }
-        });
-        videoView.setOnInfoListener(new IMediaPlayer.OnInfoListener() {
-            @Override
-            public boolean onInfo(IMediaPlayer mp, int what, int extra) {
-                switch (what) {
-                    case IMediaPlayer.MEDIA_INFO_BUFFERING_START:
-                        //  statusChange(STATUS_LOADING);
-                        statusChange(STATUS_PLAYING);
-                        break;
-                    case IMediaPlayer.MEDIA_INFO_BUFFERING_END:
-                        statusChange(STATUS_PLAYING);
-                        break;
-                    case IMediaPlayer.MEDIA_INFO_NETWORK_BANDWIDTH:
-                        //显示 下载速度
-//                        Toaster.show("download rate:" + extra);
-                        break;
-                    case IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
-                        statusChange(STATUS_PLAYING);
-                        break;
-                }
-                onInfoListener.onInfo(what, extra);
-                return false;
-            }
-        });
 
+        initVideoView();
         seekBar = (SeekBar) activity.findViewById(R.id.app_video_seekBar);
         seekBar.setMax(1000);
         seekBar.setOnSeekBarChangeListener(mSeekListener);
@@ -377,7 +379,7 @@ public class GiraffePlayer {
         $.id(R.id.app_video_fullscreen).clicked(onClickListener);
         $.id(R.id.app_video_finish).clicked(onClickListener);
         $.id(R.id.app_video_replay_icon).clicked(onClickListener);
-
+        $.id(R.id.app_video_repeat).clicked(onClickListener);
         $.id(R.id.app_video_next).clicked(onClickListener);
         $.id(R.id.app_video_previous).clicked(onClickListener);
 
@@ -413,12 +415,12 @@ public class GiraffePlayer {
                 if (orientation >= 0 && orientation <= 30 || orientation >= 330 || (orientation >= 150 && orientation <= 210)) {
                     //竖屏
                     if (portrait) {
-                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                        // activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
                         orientationEventListener.disable();
                     }
                 } else if ((orientation >= 90 && orientation <= 120) || (orientation >= 240 && orientation <= 300)) {
                     if (!portrait) {
-                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                        //  activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
                         orientationEventListener.disable();
                     }
                 }
@@ -427,7 +429,7 @@ public class GiraffePlayer {
         if (fullScreenOnly) {
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-        portrait  = getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        portrait = getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
         initHeight = activity.findViewById(R.id.app_video_box).getLayoutParams().height;
 
 
@@ -435,6 +437,47 @@ public class GiraffePlayer {
         if (!playerSupport) {
             showStatus(activity.getResources().getString(R.string.not_support));
         }
+    }
+
+    private void initVideoView() {
+        videoView = (IjkVideoView) activity.findViewById(R.id.video_view);
+        videoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(IMediaPlayer mp) {
+                statusChange(STATUS_COMPLETED);
+                oncomplete.run();
+            }
+        });
+        videoView.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(IMediaPlayer mp, int what, int extra) {
+                statusChange(STATUS_ERROR);
+                onErrorListener.onError(what, extra);
+                return true;
+            }
+        });
+        videoView.setOnInfoListener(new IMediaPlayer.OnInfoListener() {
+            @Override
+            public boolean onInfo(IMediaPlayer mp, int what, int extra) {
+                switch (what) {
+                    case IMediaPlayer.MEDIA_INFO_BUFFERING_START:
+                        //  statusChange(STATUS_LOADING);
+                        statusChange(STATUS_PLAYING);
+                        break;
+                    case IMediaPlayer.MEDIA_INFO_BUFFERING_END:
+                        statusChange(STATUS_PLAYING);
+                        break;
+                    case IMediaPlayer.MEDIA_INFO_NETWORK_BANDWIDTH:
+                        Log.e("download rate:", "" + extra);
+                        break;
+                    case IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
+                        statusChange(STATUS_PLAYING);
+                        break;
+                }
+                onInfoListener.onInfo(what, extra);
+                return false;
+            }
+        });
     }
 
     /**
@@ -482,8 +525,9 @@ public class GiraffePlayer {
         $.id(R.id.app_video_replay).gone();
         $.id(R.id.app_video_top_box).gone();
         $.id(R.id.app_video_loading).gone();
-        $.id(R.id.app_video_fullscreen).invisible();
+        $.id(R.id.app_video_fullscreen).gone();
         $.id(R.id.app_video_status).gone();
+        $.id(R.id.app_video_repeat).gone();
         showBottomControl(false);
         onControlPanelVisibilityChangeListener.change(false);
 
@@ -561,6 +605,7 @@ public class GiraffePlayer {
             }
         }
         setFullScreen(fullScreen);
+
     }
 
     private void setFullScreen(boolean fullScreen) {
@@ -595,6 +640,12 @@ public class GiraffePlayer {
     }
 
     public void play(String url) {
+
+        // initVideoView();
+
+        updateRepeatButton();
+
+
         this.url = url;
         String filenameArray[] = url.split("\\.");
         String extension = filenameArray[filenameArray.length - 1];
@@ -604,17 +655,12 @@ public class GiraffePlayer {
                 extension.equalsIgnoreCase("aac")) {
             isMp3Song = true;
 
-
-            playInFullScreen(false);
-            setFullScreenOnly(false);
-            tryFullScreen(true);//Make action bar
         } else {
             isMp3Song = false;
-            playInFullScreen(true);
-            setFullScreenOnly(true);
+
         }
         if (playerSupport) {
-            //  $.id(R.id.app_video_loading).visible();
+            //$.id(R.id.app_video_loading).visible();
             hideAll();
             videoView.setVideoPath(url);
             videoView.start();
@@ -623,6 +669,7 @@ public class GiraffePlayer {
 
         //Customize
         setTitle(removeExtension(listSongs.get(currentListIndex).getDISPLAY_NAME()));
+
     }
 
     public void playListPlayer(List<SongModel> listSongs, int currentListIndex) {
@@ -842,7 +889,6 @@ public class GiraffePlayer {
     }
 
     private void actAsMp3Player() {
-
         showBottomControl(true);
         $.id(R.id.app_video_top_box).visible();
         onControlPanelVisibilityChangeListener.change(true);
@@ -864,9 +910,9 @@ public class GiraffePlayer {
         this.fullScreenOnly = fullScreenOnly;
         tryFullScreen(fullScreenOnly);
         if (fullScreenOnly) {
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            //       activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         } else {
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+            // activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
         }
     }
 

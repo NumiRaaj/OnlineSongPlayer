@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +25,6 @@ import com.example.myapplication.util.folderItemListClick;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.R.id.list;
 
 /**
  * Created by Administrator on 8/16/2017.
@@ -56,23 +55,18 @@ public class FolderDetailFragment extends Fragment {
 
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
 
-        //findVideoDataList(path);
+        findVideoDataList(path);
 
         return v;
     }
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            if (getView() != null) {
-                findVideoDataList(path);
-            }
-        }
-    }
+
     public void findVideoDataList(String path) {
         //Get folder data
         ParseFolder parseFolder = new ParseFolder();
-        List<SongModel> listFolders = setMediaFolderData(parseFolder.getMediaDetailList(mainActivity, path));//for video folders
+        Cursor cursor = null;
+        cursor = parseFolder.getMediaDetailList(mainActivity, path);
+
+        List<SongModel> listFolders = setMediaFolderData(cursor);//for video folders
         folderList = listFolders;
         if (folderList == null) {
             return;
@@ -87,13 +81,15 @@ public class FolderDetailFragment extends Fragment {
             recyclerView.addOnItemTouchListener(new folderItemListClick(mainActivity, recyclerView, new folderItemListClick.OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
+                    if (position == -1) {
+
+                        return;
+                    }
                     if (isMultiSelect)
                         multi_select(position);
                     else {
                         Intent i = new Intent(mainActivity, CustomPlayer.class);
-                        i.putExtra("uri", folderList.get(position).getDATA());
-                        i.putExtra("title", folderList.get(position).getDISPLAY_NAME());
-                        i.putExtra("pos",position);
+                        i.putExtra("pos", position);
                         i.putExtra("LIST", (Serializable) folderList);
                         mainActivity.startActivity(i);
                     }
@@ -104,11 +100,16 @@ public class FolderDetailFragment extends Fragment {
                     if (!isMultiSelect) {
                         selectedFolderList = new ArrayList<SongModel>();
                         isMultiSelect = true;
-                        if (mainActivity.mActionMode == null) {
-                            mainActivity.mActionMode = mainActivity.startActionMode(mainActivity.mActionModeCallback);
-                        }
                     }
-                    multi_select(position);
+                    if (position == -1) {
+                        return;
+
+                    } else {
+
+                        mainActivity.mActionMode = mainActivity.startActionMode(mainActivity.mActionModeCallback);
+                        multi_select(position);
+
+                    }
                 }
             }));
         }

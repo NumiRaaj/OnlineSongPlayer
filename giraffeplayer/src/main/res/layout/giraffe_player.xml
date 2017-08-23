@@ -227,14 +227,15 @@
                 android:orientation="horizontal"
                 android:weightSum="5">
                 <ImageView
-                    android:visibility="invisible"
+                    android:id="@+id/app_video_repeat"
+                    android:visibility="visible"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
                     android:layout_weight="1"
                     android:padding="8dp"
-                    android:src="@drawable/ic_skip_previous_white_48dp" />
+                    android:src="@drawable/ic_no_repeat" />
                 <ImageView
                     android:id="@+id/app_video_previous"
                     android:background="?attr/selectableItemBackgroundBorderless"

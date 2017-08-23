@@ -30,8 +30,6 @@ public class MainActivity extends AppCompatActivity implements AlertDialogHelper
     public ActionMode mActionMode;
     public Menu context_menu;
     public Menu mActivityMenu;
-
-    public boolean isMultiSelect = false;
     public FragmentManager mFragmentManager;
     public FragmentTransaction mFragmentTransaction;
     public AlertDialogHelper alertDialogHelper;
@@ -53,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements AlertDialogHelper
         //Initialize Home fragment here
         mFragmentManager = getSupportFragmentManager();
         mFragmentTransaction = mFragmentManager.beginTransaction();
-        mFragmentTransaction.replace(R.id.container, new FolderFragment().getInstance(this)).commit();
+        mFragmentTransaction.add(R.id.container, new FolderFragment().getInstance(this)).commit();
 
     }
 
@@ -139,8 +137,7 @@ public class MainActivity extends AppCompatActivity implements AlertDialogHelper
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            mActionMode = null;
-            isMultiSelect = false;
+
             if (mFolderFragment != null) {
                 mFolderFragment.findVideoDataList();
                 mFolderFragment.isMultiSelect=false;
@@ -194,22 +191,7 @@ public class MainActivity extends AppCompatActivity implements AlertDialogHelper
 
         }
     }
-    public void deleteDirectory(File file) {
-        if( file.exists() ) {
-            if (file.isDirectory()) {
-                File[] files = file.listFiles();
-                for(int i=0; i<files.length; i++) {
-                    if(files[i].isDirectory()) {
-                        deleteDirectory(files[i]);
-                    }
-                    else {
-                        files[i].delete();
-                    }
-                }
-            }
-            file.delete();
-        }
-    }
+
     @Override
     public void onNegativeClick(int from) {
 

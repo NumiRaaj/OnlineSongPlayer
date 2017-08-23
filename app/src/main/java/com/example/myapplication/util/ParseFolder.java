@@ -22,6 +22,8 @@ import java.io.File;
 public class ParseFolder {
     //for MedialPlayer;
     public static int seekBeforeRotation=0;
+    public static int currentSongIndex=0;
+
 
     public Cursor getMediaFolderList(Activity context) {
         System.gc();

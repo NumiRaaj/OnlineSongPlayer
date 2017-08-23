@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,8 +23,6 @@ import com.example.myapplication.util.folderItemListClick;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.R.attr.path;
 
 /**
  * Created by Administrator on 8/16/2017.
@@ -50,24 +49,19 @@ public class FolderFragment extends Fragment {
 
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
 
-       // findVideoDataList();
+        findVideoDataList();
 
         return v;
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            if (getView() != null) {
-                findVideoDataList();
-            }
-        }
-    }
+
     public void findVideoDataList() {
         //Get folder data
         ParseFolder parseFolder = new ParseFolder();
-        List<MediaFolder> listFolders = setMediaFolderData(parseFolder.getMediaFolderList(mainActivity), false);//for video folders
+
+        Cursor cursor = null;
+        cursor = parseFolder.getMediaFolderList(mainActivity);
+        List<MediaFolder> listFolders = setMediaFolderData(cursor, false);//for video folders
 
         folderList = listFolders;
 
@@ -83,6 +77,10 @@ public class FolderFragment extends Fragment {
             recyclerView.addOnItemTouchListener(new folderItemListClick(mainActivity, recyclerView, new folderItemListClick.OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
+                    if (position == -1) {
+                        return;
+                    }
+
                     if (isMultiSelect) {
                         multi_select(position);
                     } else {
@@ -99,7 +97,14 @@ public class FolderFragment extends Fragment {
                             mainActivity.mActionMode = mainActivity.startActionMode(mainActivity.mActionModeCallback);
                         }
                     }
-                    multi_select(position);
+
+                    if (position == -1) {
+                        return;
+                    } else {
+                        mainActivity.mActionMode = mainActivity.startActionMode(mainActivity.mActionModeCallback);
+                        multi_select(position);
+
+                    }
                 }
             }));
         }
@@ -148,7 +153,12 @@ public class FolderFragment extends Fragment {
                 fileName = folderList.getString(folderList.getColumnIndex("_display_name"));
 
                 mediaFolder.setPath(data.replace("/" + fileName, ""));
-                mediaFolder.setDisplayName(mediaFolder.getPath().substring(mediaFolder.getPath().lastIndexOf("/") + 1));
+                String folderName = mediaFolder.getPath().substring(mediaFolder.getPath().lastIndexOf("/") + 1);
+                if (folderName.equalsIgnoreCase("0")) {
+                    mediaFolder.setDisplayName("Internal Memory");
+                } else {
+                    mediaFolder.setDisplayName(folderName);
+                }
                 //check total number of files in follder
                 File dir = new File(mediaFolder.getPath());
                 File[] files = dir.listFiles();
@@ -157,9 +167,8 @@ public class FolderFragment extends Fragment {
                 int count = 0;
                 for (File f : list) {
                     String name = f.getName();
-                    Log.e("file name", "" + name);
-                    if (!fileName.equals("facebook_ringtone_pop.m4a"))
-                    {
+           //         Log.e("file name", "" + name);
+                    if (!fileName.equals("facebook_ringtone_pop.m4a")) {
                         if (name.endsWith(".mp3") || name.endsWith(".m4a") || name.endsWith(".wav")
                                 || name.endsWith(".avi") || name.endsWith(".mp4")
                                 || name.endsWith(".mkv") || name.endsWith(".3gp")
@@ -170,6 +179,11 @@ public class FolderFragment extends Fragment {
                     }
                 }
                 mediaFolder.setNumberOfMediaFiles(count);
+
+
+                if (folderName.equalsIgnoreCase("ringtones") || folderName.equalsIgnoreCase("alarms") || folderName.equalsIgnoreCase("notifications")) {
+                    count = 0;
+                }
 
                 if (count > 0) {
                     mediaFolders.add(mediaFolder);

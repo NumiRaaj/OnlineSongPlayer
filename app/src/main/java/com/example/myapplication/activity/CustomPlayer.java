@@ -5,11 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.SongModel;
@@ -32,22 +28,19 @@ public class CustomPlayer extends AppCompatActivity {
     int currentPos;
 
     boolean isHomePressed = false;
-
+    List<tcking.github.com.giraffeplayer.SongModel> list;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        ActionBar supportActionBar = ((AppCompatActivity) this).getSupportActionBar();
-        supportActionBar.hide();
-
         setContentView(R.layout.layout_custom_player);
         //For screen orientation changes checked
+
         setupPlayer();
         if (savedInstanceState != null) {
-
+            player.playListPlayer(list, ParseFolder.currentSongIndex);
             player.seekTo(ParseFolder.seekBeforeRotation, true);
+
         }
     }
 
@@ -59,12 +52,11 @@ public class CustomPlayer extends AppCompatActivity {
     }
 
     public void setupPlayer() {
-        String url = getIntent().getStringExtra("uri");
         currentPos = getIntent().getIntExtra("pos", 0);
         songModelList = (List<SongModel>) getIntent().getSerializableExtra("LIST");
         player = new GiraffePlayer(this);
         //player.play(url);
-        List<tcking.github.com.giraffeplayer.SongModel> list = new ArrayList<>();
+       list = new ArrayList<>();
         for (int i = 0; i < songModelList.size(); i++) {
             tcking.github.com.giraffeplayer.SongModel model = new tcking.github.com.giraffeplayer.SongModel();
             model.setDATA(songModelList.get(i).getDATA());
@@ -72,6 +64,9 @@ public class CustomPlayer extends AppCompatActivity {
 
             list.add(model);
         }
+
+        player.setFullScreenOnly(true);
+       // player.tryFullScreen(true);
         player.playListPlayer(list, currentPos);
 
 
@@ -80,8 +75,12 @@ public class CustomPlayer extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
-        detectScreenLocking();
+        //Check wheater playing mp3 or not
+        if (player.isMp3Song) {
+            detectScreenLocking();
+        } else {
+            isHomePressed = false;
+        }
 
         if (!isHomePressed) {
             if (player != null) {
@@ -128,6 +127,7 @@ public class CustomPlayer extends AppCompatActivity {
         if (player != null) {
             //Getting current postion of seek bar while moving orientation
             ParseFolder.seekBeforeRotation = player.getCurrentPosition();
+            ParseFolder.currentSongIndex=player.currentListIndex;
             player.onDestroy();
 
         }

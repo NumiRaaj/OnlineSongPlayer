@@ -10,7 +10,7 @@
 
     <color name="black">#000000</color>
     <color name="list_divider">#979797</color>
-    <color name="list_item_selected_state">#F4F6F6</color>
+    <color name="list_item_selected_state">#c3dff7</color>
     <color name="list_item_normal_state">@color/bg</color>
 
     <color name="thumb_color">#353333</color>
