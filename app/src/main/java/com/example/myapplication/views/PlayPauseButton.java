@@ -9,9 +9,10 @@ import android.graphics.Path;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by Administrator on 8/8/2017.

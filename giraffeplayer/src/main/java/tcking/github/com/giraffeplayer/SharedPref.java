@@ -3,7 +3,12 @@ package tcking.github.com.giraffeplayer;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.util.Set;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Administrator on 8/23/2017.
@@ -19,6 +24,10 @@ public class SharedPref {
     public static String KEY_MY_SHARED_BOOLEAN = "my_shared_boolean";
     public static String KEY_MY_SHARED_FOO = "my_shared_foo";
 
+    public static String PREF_VIDEO_LIST = "songs_list";
+    public static String PREF_CURRENT_PLAY_INDEX = "current_play_index";
+    public static String PREF_CURRENT_SEEK_POSITION = "current_seek_bar_position";
+    public static String PREF_IS_FLOATING_SCREEN = "is_floating_window";
     //get the SharedPreferences object instance
     //create SharedPreferences file if not present
 
@@ -28,7 +37,7 @@ public class SharedPref {
     }
 
     //Save Booleans
-    public static void savePref(Context context, String key, boolean value) {
+    public static void save(Context context, String key, boolean value) {
         getPrefs(context).edit().putBoolean(key, value).commit();
     }
 
@@ -94,5 +103,21 @@ public class SharedPref {
         return getPrefs(context).getLong(key, defaultValue);
     }
 
+
+    public static void setVideoList(List<SongModel> list, Context context) {
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+        getPrefs(context).edit().putString(PREF_VIDEO_LIST, json).commit();
+
+
+    }
+
+    public static List<SongModel> getVideoList(Context context) {
+        Gson gson = new Gson();
+        String json = getPrefs(context).getString(PREF_VIDEO_LIST, null);
+        Type type = new TypeToken<ArrayList<SongModel>>() {
+        }.getType();
+        return gson.fromJson(json, type);
+    }
 
 }

@@ -25,7 +25,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -42,11 +41,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import tv.danmaku.ijk.media.player.AndroidMediaPlayer;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 import tv.danmaku.ijk.media.player.TextureMediaPlayer;
-import tv.danmaku.ijk.media.player.MediaPlayerService;
 
 public class IjkVideoView extends FrameLayout implements MediaController.MediaPlayerControl {
     private String TAG = "IjkVideoView";
@@ -796,6 +795,8 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     @Override
     public void seekTo(int msec) {
+
+        Log.e("Seekbar", "" + msec);
         if (isInPlaybackState()) {
             mMediaPlayer.seekTo(msec);
             mSeekWhenPrepared = 0;

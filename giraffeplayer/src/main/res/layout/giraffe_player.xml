@@ -5,10 +5,24 @@
     android:layout_height="match_parent"
     android:background="#000">
 
-    <tcking.github.com.giraffeplayer.IjkVideoView
-        android:id="@+id/video_view"
+    <RelativeLayout
+
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <tcking.github.com.giraffeplayer.IjkVideoView
+            android:id="@+id/video_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:id="@+id/audio_thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#000"
+            android:orientation="horizontal" />
+
+    </RelativeLayout>
 
 
     <RelativeLayout
@@ -135,7 +149,6 @@
 
             </LinearLayout>
 
-
         </FrameLayout>
 
         <!-- status-->
@@ -165,6 +178,83 @@
             android:indeterminateBehavior="repeat"
             android:indeterminateOnly="true"
             android:visibility="gone" />
+
+
+        <RelativeLayout
+            android:id="@+id/layout_center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:orientation="vertical"
+                android:padding="4dp">
+
+                <ImageView
+
+                    android:id="@+id/app_video_speed"
+                    android:layout_width="@dimen/_30sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_marginTop="5dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:orientation="vertical"
+                android:padding="4dp">
+
+                <ImageView
+                    android:id="@+id/video_background_play"
+                    android:layout_width="@dimen/_30sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_marginBottom="5dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_background_video" />
+
+                <ImageView
+                    android:id="@+id/app_video_mute"
+                    android:layout_width="@dimen/_30sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_volume_off_white_36dp" />
+
+                <ImageView
+                    android:id="@+id/app_video_crop"
+                    android:layout_width="@dimen/_30sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_marginTop="5dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_crop" />
+
+
+                <ImageView
+                    android:id="@+id/app_video_repeat"
+                    android:layout_width="@dimen/_30sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_repeat_black_24dp" />
+            </LinearLayout>
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/app_video_bottom_box"
@@ -220,58 +310,61 @@
             </LinearLayout>
 
             <LinearLayout
-                android:gravity="center_horizontal"
-                android:layout_marginTop="@dimen/_5sdp"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_40sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:gravity="center_horizontal"
                 android:orientation="horizontal"
                 android:weightSum="5">
+
+
                 <ImageView
-                    android:id="@+id/app_video_repeat"
-                    android:visibility="visible"
-                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:id="@+id/video_floating_mode"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
                     android:layout_weight="1"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_no_repeat" />
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="@dimen/_10sdp"
+                    android:src="@drawable/floating_window" />
+
                 <ImageView
                     android:id="@+id/app_video_previous"
-                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
                     android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="8dp"
                     android:src="@drawable/ic_skip_previous_white_48dp" />
 
 
                 <ImageView
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:layout_weight="1"
                     android:id="@+id/app_video_play"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="8dp"
                     android:src="@drawable/ic_play_arrow_white_24dp" />
+
                 <ImageView
                     android:id="@+id/app_video_next"
-                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
                     android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="8dp"
                     android:src="@drawable/ic_skip_next_white_48dp" />
 
                 <ImageView
 
-                    android:layout_weight="1"
                     android:id="@+id/app_video_fullscreen"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="8dp"
                     android:src="@drawable/ic_fullscreen_white_24dp" />
@@ -280,32 +373,44 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/app_video_top_box"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_5sdp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <ImageView
-
             android:id="@+id/app_video_finish"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_chevron_left_white_36dp" />
 
         <TextView
             android:id="@+id/app_video_title"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
             android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_toRightOf="@+id/app_video_finish"
+            android:padding="8dp"
             android:text="Title of the movie"
             android:textColor="@android:color/white"
             android:textSize="@dimen/_14sdp"
             android:visibility="visible" />
-    </LinearLayout>
+
+        <ImageView
+            android:id="@+id/video_playlist"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/_5sdp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="@dimen/_4sdp"
+            android:src="@drawable/video_list" />
+    </RelativeLayout>
 
 
 </RelativeLayout>

@@ -6,6 +6,15 @@ public class SongModel {
     public String DURATION;
     public String SIZE;
     public String _ID;
+    public int seekPostion;
+
+    public int getSeekPostion() {
+        return seekPostion;
+    }
+
+    public void setSeekPostion(int seekPostion) {
+        this.seekPostion = seekPostion;
+    }
 
     public String getDATA() {
         return DATA;

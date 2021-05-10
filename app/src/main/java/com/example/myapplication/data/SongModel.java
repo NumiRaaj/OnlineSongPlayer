@@ -1,7 +1,5 @@
 package com.example.myapplication.data;
 
-import android.os.Parcelable;
-
 import java.io.Serializable;
 
 public class SongModel implements Serializable {
@@ -10,6 +8,7 @@ public class SongModel implements Serializable {
     public String DURATION;
     public String SIZE;
     public String _ID;
+
 
     public String getDATA() {
         return DATA;

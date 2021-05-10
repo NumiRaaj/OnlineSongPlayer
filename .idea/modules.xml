@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Player.iml" filepath="$PROJECT_DIR$/Player.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/giraffeplayer/giraffeplayer.iml" filepath="$PROJECT_DIR$/giraffeplayer/giraffeplayer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ijkplayer-java/ijkplayer-java.iml" filepath="$PROJECT_DIR$/ijkplayer-java/ijkplayer-java.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/AudioVideoPlayer.iml" filepath="$PROJECT_DIR$/.idea/modules/AudioVideoPlayer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/AudioVideoPlayer.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/AudioVideoPlayer.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/giraffeplayer/AudioVideoPlayer.giraffeplayer.iml" filepath="$PROJECT_DIR$/.idea/modules/giraffeplayer/AudioVideoPlayer.giraffeplayer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-java/AudioVideoPlayer.ijkplayer-java.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-java/AudioVideoPlayer.ijkplayer-java.iml" />
     </modules>
   </component>
 </project>

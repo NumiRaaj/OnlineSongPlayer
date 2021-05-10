@@ -3,12 +3,6 @@ package com.example.myapplication.fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +16,16 @@ import com.example.myapplication.data.SongModel;
 import com.example.myapplication.util.ParseFolder;
 import com.example.myapplication.util.folderItemListClick;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by Administrator on 8/16/2017.
@@ -65,6 +66,7 @@ public class FolderDetailFragment extends Fragment {
         ParseFolder parseFolder = new ParseFolder();
         Cursor cursor = null;
         cursor = parseFolder.getMediaDetailList(mainActivity, path);
+
 
         List<SongModel> listFolders = setMediaFolderData(cursor);//for video folders
         folderList = listFolders;
@@ -154,13 +156,18 @@ public class FolderDetailFragment extends Fragment {
         if (folderList != null && folderList.moveToFirst()) {
 
             do {
-                SongModel mediaFolder = new SongModel();
-                mediaFolder.setDISPLAY_NAME(folderList.getString(folderList.getColumnIndex(AudioModel.DISPLAY_NAME)));
-                mediaFolder.set_ID(folderList.getString(folderList.getColumnIndex(AudioModel._ID)));
-                mediaFolder.setDATA(folderList.getString(folderList.getColumnIndex(AudioModel.DATA)));
-                mediaFolder.setDURATION(folderList.getString(folderList.getColumnIndex(AudioModel.DURATION)));
-                mediaFolder.setSIZE(folderList.getString(folderList.getColumnIndex(AudioModel.SIZE)));
-                mediaFolders.add(mediaFolder);
+                File file = new File(folderList.getString(folderList.getColumnIndex(AudioModel.DATA)));
+                if (file.exists()) {
+                    SongModel mediaFolder = new SongModel();
+                    mediaFolder.setDISPLAY_NAME(folderList.getString(folderList.getColumnIndex(AudioModel.DISPLAY_NAME)));
+                    mediaFolder.set_ID(folderList.getString(folderList.getColumnIndex(AudioModel._ID)));
+                    mediaFolder.setDATA(folderList.getString(folderList.getColumnIndex(AudioModel.DATA)));
+                    mediaFolder.setDURATION(folderList.getString(folderList.getColumnIndex(AudioModel.DURATION)));
+                    mediaFolder.setSIZE(folderList.getString(folderList.getColumnIndex(AudioModel.SIZE)));
+
+                    mediaFolders.add(mediaFolder);
+                }
+
             } while (folderList.moveToNext());
 
 

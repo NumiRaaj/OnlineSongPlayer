@@ -1,6 +1,7 @@
 package tcking.github.com.giraffeplayer;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -8,8 +9,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Toast;
+
+import java.util.List;
 
 /**
  * Created by tcking on 15/10/27.
@@ -17,36 +19,67 @@ import android.widget.Toast;
 public class GiraffePlayerActivity extends Activity {
 
     GiraffePlayer player;
+    static String EXTRA_IS_FLOATING_VIDEO = "isFromFloating";
+
+    public static Intent getInstance(Context context, boolean isFromFloating) {
+        Intent intent = new Intent(context, GiraffePlayerActivity.class);
+        intent.putExtra(GiraffePlayerActivity.EXTRA_IS_FLOATING_VIDEO, isFromFloating);
+        return intent;
+    }
+
+    public static Intent getIntent(Context context, List<SongModel> arrayList, int postion, int seekBarPostion) {
+        Intent intent = new Intent(context, GiraffePlayerActivity.class);
+        intent.putExtra(GiraffePlayerActivity.EXTRA_IS_FLOATING_VIDEO, true);
+
+        SharedPref.setVideoList(arrayList, context);
+        SharedPref.save(context, SharedPref.PREF_CURRENT_PLAY_INDEX, postion);
+        SharedPref.save(context, SharedPref.PREF_CURRENT_SEEK_POSITION, seekBarPostion);
+        return intent;
+    }
 
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.giraffe_player);
+
+
+        boolean isFromFloating = false;
+        if (getIntent() != null) {
+            isFromFloating = getIntent().getBooleanExtra(EXTRA_IS_FLOATING_VIDEO, false);
+        }
+
+
+        //To stop notification
+        startService(new Intent(this, VideoPlayAsAudioService.class).setAction(VideoPlayAsAudioService.NOTIFICATION_CLICK_ACTION));
+
+
+        player = new GiraffePlayer(this);
         Config config = getIntent().getParcelableExtra("config");
         if (config == null || TextUtils.isEmpty(config.url)) {
-            Toast.makeText(this, R.string.giraffe_player_url_empty, Toast.LENGTH_SHORT).show();
+            if (isFromFloating) {
+
+                setVideoPlayerAfterFloating();
+                //  player.setTitle();
+            } else {
+                Toast.makeText(this, R.string.giraffe_player_url_empty, Toast.LENGTH_SHORT).show();
+            }
         } else {
-            player = new GiraffePlayer(this);
             player.setTitle(config.title);
             player.setDefaultRetryTime(config.defaultRetryTime);
             player.setFullScreenOnly(config.fullScreenOnly);
+
             player.setScaleType(TextUtils.isEmpty(config.scaleType) ? GiraffePlayer.SCALETYPE_FITPARENT : config.scaleType);
             player.setTitle(TextUtils.isEmpty(config.title) ? "" : config.title);
             player.setShowNavIcon(config.showNavIcon);
             player.play(config.url);
-        }
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (player != null) {
-          //  player.onPause();
+
         }
+
+
     }
 
     @Override
@@ -88,6 +121,23 @@ public class GiraffePlayerActivity extends Activity {
         context.startActivity(intent);
     }
 
+    public void setVideoPlayerAfterFloating() {
+        player.setFullScreenOnly(false);
+        player.playListPlayer(SharedPref.getVideoList(this),
+                SharedPref.getInt(this, SharedPref.PREF_CURRENT_PLAY_INDEX));
+        player.seekTo(SharedPref.getInt(this, SharedPref.PREF_CURRENT_SEEK_POSITION), true);
+
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (player != null) {
+            //  player.onPause();
+        }
+    }
+
     public static Config configPlayer(Activity activity) {
         return new Config(activity);
     }
@@ -102,9 +152,9 @@ public class GiraffePlayerActivity extends Activity {
         private String url;
         private boolean showNavIcon = true;
 
-        private static boolean debug=true;
+        private static boolean debug = true;
 
-        public  Config debug(boolean debug) {
+        public Config debug(boolean debug) {
             Config.debug = debug;
             return this;
         }

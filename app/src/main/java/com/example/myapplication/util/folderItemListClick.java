@@ -1,19 +1,19 @@
 package com.example.myapplication.util;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * Created by Jaison on 21/10/15.
  */
-public class folderItemListClick implements RecyclerView.OnItemTouchListener
-{
-    public static interface OnItemClickListener
-    {
+public class folderItemListClick implements RecyclerView.OnItemTouchListener {
+    public static interface OnItemClickListener {
         public void onItemClick(View view, int position);
+
         public void onItemLongClick(View view, int position);
     }
 

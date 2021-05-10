@@ -5,8 +5,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.provider.MediaStore;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +18,9 @@ import com.example.myapplication.util.ParseFolder;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by Jaison on 08/10/16.
@@ -90,6 +91,7 @@ public class FolderDetailAdapter extends RecyclerView.Adapter<FolderDetailAdapte
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 1;
         Bitmap thmb = MediaStore.Video.Thumbnails.getThumbnail(crThumb, ids, 1, options);
+
         if (thmb != null) {
             holder.thumbnail.setImageBitmap(thmb);
         } else {

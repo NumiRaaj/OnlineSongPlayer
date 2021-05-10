@@ -10,10 +10,11 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.Property;
 import android.view.animation.DecelerateInterpolator;
+
+import androidx.annotation.Nullable;
 
 /**
  * Created by Administrator on 8/8/2017.

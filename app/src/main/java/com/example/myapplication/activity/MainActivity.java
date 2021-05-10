@@ -1,10 +1,6 @@
 package com.example.myapplication.activity;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,9 +13,13 @@ import com.example.myapplication.fragment.FolderFragment;
 import com.example.myapplication.util.AlertDialogHelper;
 import com.example.myapplication.util.ParseFolder;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 /**
  * Created by Administrator on 8/16/2017.

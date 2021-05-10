@@ -4,8 +4,6 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.SongModel;
@@ -14,6 +12,8 @@ import com.example.myapplication.util.ParseFolder;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import tcking.github.com.giraffeplayer.GiraffePlayer;
 
 
@@ -61,12 +61,17 @@ public class CustomPlayer extends AppCompatActivity {
             tcking.github.com.giraffeplayer.SongModel model = new tcking.github.com.giraffeplayer.SongModel();
             model.setDATA(songModelList.get(i).getDATA());
             model.setDISPLAY_NAME(songModelList.get(i).getDISPLAY_NAME());
+            model.setDURATION(songModelList.get(i).getDURATION());
 
             list.add(model);
         }
 
-        player.setFullScreenOnly(true);
-       // player.tryFullScreen(true);
+        //  player.setFullScreenOnly(false);
+        // player.tryFullScreen(true);
+
+
+        //Set full screen activity
+
         player.playListPlayer(list, currentPos);
 
 

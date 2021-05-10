@@ -21,8 +21,8 @@ import java.io.File;
 
 public class ParseFolder {
     //for MedialPlayer;
-    public static int seekBeforeRotation=0;
-    public static int currentSongIndex=0;
+    public static int seekBeforeRotation = 0;
+    public static int currentSongIndex = 0;
 
 
     public Cursor getMediaFolderList(Activity context) {
@@ -62,12 +62,16 @@ public class ParseFolder {
 
         Cursor musiccursor = null;
 
-        musiccursor = mActivity.managedQuery(MediaStore.Files.getContentUri("external"), proj, selection, selectionArgs, sortOrder);
+        musiccursor = mActivity.getContentResolver().query(MediaStore.Files.getContentUri("external"), proj, selection, selectionArgs, sortOrder);
         MatrixCursor newCursor = new MatrixCursor(proj);
         if (musiccursor.moveToFirst()) {
             do {
                 if (musiccursor.getString(musiccursor.getColumnIndex("_data")).equals(folderPath + "/" + musiccursor.getString(musiccursor.getColumnIndex("_display_name")))) {
-                    newCursor.addRow(new Object[]{musiccursor.getString(musiccursor.getColumnIndex("_id")), musiccursor.getString(musiccursor.getColumnIndex("_data")), musiccursor.getString(musiccursor.getColumnIndex("_display_name")), musiccursor.getString(musiccursor.getColumnIndex("_size")), musiccursor.getString(musiccursor.getColumnIndex("duration"))});
+                    newCursor.addRow(new Object[]{musiccursor.getString(musiccursor.getColumnIndex("_id")),
+                            musiccursor.getString(musiccursor.getColumnIndex("_data")),
+                            musiccursor.getString(musiccursor.getColumnIndex("_display_name")),
+                            musiccursor.getString(musiccursor.getColumnIndex("_size")),
+                            musiccursor.getString(musiccursor.getColumnIndex("duration"))});
                 }
             } while (musiccursor.moveToNext());
         }

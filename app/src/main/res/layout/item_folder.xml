@@ -6,7 +6,7 @@
     android:orientation="horizontal"
     android:background="@color/bg">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/icon_folder"
         android:layout_width="@dimen/_50sdp"
         android:layout_height="@dimen/_50sdp"

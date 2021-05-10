@@ -6,4 +6,5 @@ public class AudioModel {
     public static final String DURATION = "duration";
     public static final String SIZE = "_size";
     public static final String _ID = "_id";
+
 }
