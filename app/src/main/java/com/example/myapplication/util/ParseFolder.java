@@ -27,7 +27,7 @@ public class ParseFolder {
 
     public Cursor getMediaFolderList(Activity context) {
         System.gc();
-        String[] projection = new String[]{"COUNT(" + MediaStore.Files.FileColumns.DATA + ") AS totalFiles",
+        String[] projection = new String[]{MediaStore.Files.FileColumns.DISPLAY_NAME,
                 MediaStore.Files.FileColumns.MEDIA_TYPE,
                 MediaStore.Files.FileColumns.PARENT,
                 MediaStore.Files.FileColumns.DATA,
@@ -35,12 +35,13 @@ public class ParseFolder {
         };
 
         String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + " = " + MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO +
-                " OR " + MediaStore.Files.FileColumns.MEDIA_TYPE + "=" + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO +
-                ") GROUP BY (" + MediaStore.Files.FileColumns.PARENT;
+                " OR " + MediaStore.Files.FileColumns.MEDIA_TYPE + "=" + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
+//  ") GROUP BY (" + MediaStore.Files.FileColumns.PARENT;
+
 
         String sortOrder = MediaStore.Files.FileColumns.DISPLAY_NAME + " ASC";
         Cursor mediaCursor = null;
-        mediaCursor = context.managedQuery(MediaStore.Files.getContentUri("external"), projection, selection, null, sortOrder);
+        mediaCursor = context.getContentResolver().query(MediaStore.Files.getContentUri("external"), projection, selection, null, sortOrder);
 
         return mediaCursor;
     }

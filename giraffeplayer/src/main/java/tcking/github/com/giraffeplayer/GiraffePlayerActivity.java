@@ -52,10 +52,6 @@ public class GiraffePlayerActivity extends Activity {
         }
 
 
-        //To stop notification
-        startService(new Intent(this, VideoPlayAsAudioService.class).setAction(VideoPlayAsAudioService.NOTIFICATION_CLICK_ACTION));
-
-
         player = new GiraffePlayer(this);
         Config config = getIntent().getParcelableExtra("config");
         if (config == null || TextUtils.isEmpty(config.url)) {

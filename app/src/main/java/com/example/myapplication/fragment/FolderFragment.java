@@ -84,6 +84,7 @@ public class FolderFragment extends Fragment {
                     if (isMultiSelect) {
                         multi_select(position);
                     } else {
+                        mainActivity.adsFullScreen2.showActivityAd(null);
                         mainActivity.fragmentReplace(new FolderDetailFragment().getInstance(mainActivity, folderList.get(position).getPath(), folderList.get(position).getDisplayName()));
                     }
                 }
@@ -141,11 +142,12 @@ public class FolderFragment extends Fragment {
     }
 
     private ArrayList<MediaFolder> setMediaFolderData(Cursor folderList, boolean isAudioList) {
-
+        String folderName = "";
         ArrayList<MediaFolder> mediaFolders = new ArrayList();
         if (folderList != null && folderList.getCount() > 0) {
             int i = 0;
             while (folderList.moveToNext()) {
+
                 String data;
                 String fileName;
                 MediaFolder mediaFolder = new MediaFolder();
@@ -153,7 +155,7 @@ public class FolderFragment extends Fragment {
                 fileName = folderList.getString(folderList.getColumnIndex("_display_name"));
 
                 mediaFolder.setPath(data.replace("/" + fileName, ""));
-                String folderName = mediaFolder.getPath().substring(mediaFolder.getPath().lastIndexOf("/") + 1);
+                folderName = mediaFolder.getPath().substring(mediaFolder.getPath().lastIndexOf("/") + 1);
                 if (folderName.equalsIgnoreCase("0")) {
                     mediaFolder.setDisplayName("Internal Memory");
                 } else {
@@ -167,14 +169,14 @@ public class FolderFragment extends Fragment {
                 int count = 0;
                 for (File f : list) {
                     String name = f.getName();
-           //         Log.e("file name", "" + name);
+                    //         Log.e("file name", "" + name);
                     if (!fileName.equals("facebook_ringtone_pop.m4a")) {
                         if (name.endsWith(".mp3") || name.endsWith(".m4a") || name.endsWith(".wav")
                                 || name.endsWith(".avi") || name.endsWith(".mp4")
                                 || name.endsWith(".mkv") || name.endsWith(".3gp")
                                 || name.endsWith(".aac") || name.endsWith(".TS")
                                 || name.endsWith(".webm") || name.endsWith(".mov")
-                                )
+                        )
                             count++;
                     }
                 }
@@ -188,15 +190,36 @@ public class FolderFragment extends Fragment {
                 if (count > 0) {
                     mediaFolders.add(mediaFolder);
                 }
-
             }
+
+
         } else {
 
             Log.e("No", "Folder exites here");
             return null;
         }
 
-        return mediaFolders;
+
+        return removeDuplicateFolderName(mediaFolders);
+    }
+
+    public ArrayList<MediaFolder> removeDuplicateFolderName(ArrayList<MediaFolder> list) {
+   /*     ArrayList<MediaFolder>items = new ArrayList<MediaFolder>();
+        for (int i=0; i<=list.size();i++) {
+            if (!list.get(i).getDisplayName().equals(items.get(i).getDisplayName())) {
+                 items.add(list.get(i));
+            }
+        }
+*/
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = i + 1; j < list.size(); j++) {
+                if (list.get(i).getDisplayName().equals(list.get(j).getDisplayName())) {
+                    list.remove(j);
+                    j--;
+                }
+            }
+        }
+        return list;
     }
 
     @Override

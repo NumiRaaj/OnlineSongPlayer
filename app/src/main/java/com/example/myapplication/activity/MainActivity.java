@@ -5,6 +5,7 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.RelativeLayout;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.MediaFolder;
@@ -12,6 +13,8 @@ import com.example.myapplication.fragment.FolderDetailFragment;
 import com.example.myapplication.fragment.FolderFragment;
 import com.example.myapplication.util.AlertDialogHelper;
 import com.example.myapplication.util.ParseFolder;
+import com.noman.ads.AdsBanner;
+import com.noman.ads.AdsInterstitial;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,75 +43,7 @@ public class MainActivity extends AppCompatActivity implements AlertDialogHelper
     public FolderFragment mFolderFragment;
     public FolderDetailFragment mFolderDetailFragment;
 
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        alertDialogHelper = new AlertDialogHelper(this);
-
-        //Initialize Home fragment here
-        mFragmentManager = getSupportFragmentManager();
-        mFragmentTransaction = mFragmentManager.beginTransaction();
-        mFragmentTransaction.add(R.id.container, new FolderFragment().getInstance(this)).commit();
-
-    }
-
-    public void fragmentReplace(Fragment fragment) {
-        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-        if (!(fragment instanceof FolderFragment)) {
-            fragmentTransaction.addToBackStack(null);
-        }
-        fragmentTransaction.replace(R.id.container, fragment).commit();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_common_activity, menu);
-
-        mActivityMenu = menu;
-
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            case R.id.action_settings:
-
-                return true;
-
-            case R.id.action_refresh:
-
-                if (mFolderFragment != null) {
-                    mFolderFragment.findVideoDataList();
-                }
-
-                //for folder detail item reomve
-                if (mFolderDetailFragment != null) {
-                    mFolderDetailFragment.findVideoDataList(mFolderDetailFragment.path);
-                }
-
-
-                return true;
-            case R.id.action_exit:
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-
+    public AdsInterstitial adsFullScreen2;
     public ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -140,16 +75,89 @@ public class MainActivity extends AppCompatActivity implements AlertDialogHelper
 
             if (mFolderFragment != null) {
                 mFolderFragment.findVideoDataList();
-                mFolderFragment.isMultiSelect=false;
+                mFolderFragment.isMultiSelect = false;
             }
             //for folder detail item reomve
             if (mFolderDetailFragment != null) {
                 mFolderDetailFragment.findVideoDataList(mFolderDetailFragment.path);
-                mFolderDetailFragment.isMultiSelect=false;
+                mFolderDetailFragment.isMultiSelect = false;
             }
         }
     };
 
+    public void fragmentReplace(Fragment fragment) {
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+        if (!(fragment instanceof FolderFragment)) {
+            fragmentTransaction.addToBackStack(null);
+        }
+        fragmentTransaction.replace(R.id.container, fragment).commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_common_activity, menu);
+
+        mActivityMenu = menu;
+
+
+        return true;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        alertDialogHelper = new AlertDialogHelper(this);
+        adsFullScreen2 = new AdsInterstitial("1", this); //intialize oncreate
+
+
+        adsFullScreen2.showActivityAd(null);
+        //Initialize Home fragment here
+        mFragmentManager = getSupportFragmentManager();
+        mFragmentTransaction = mFragmentManager.beginTransaction();
+        mFragmentTransaction.add(R.id.container, new FolderFragment().getInstance(this)).commit();
+
+        new AdsBanner("1", this, (RelativeLayout) findViewById(R.id.ad_layout)); //Replace your banner add layout
+
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        switch (id) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.action_settings:
+
+                return true;
+
+            case R.id.action_refresh:
+
+                if (mFolderFragment != null) {
+                    mFolderFragment.findVideoDataList();
+                }
+
+                //for folder detail item reomve
+                if (mFolderDetailFragment != null) {
+                    mFolderDetailFragment.findVideoDataList(mFolderDetailFragment.path);
+                }
+
+                adsFullScreen2.showActivityAd(null);
+
+
+                return true;
+            case R.id.action_exit:
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
 
     // AlertDialog Callback Functions
@@ -171,9 +179,9 @@ public class MainActivity extends AppCompatActivity implements AlertDialogHelper
 
                 //for folder detail item reomve
                 if (mFolderDetailFragment != null) {
-                    ParseFolder parseFolder=new ParseFolder();
+                    ParseFolder parseFolder = new ParseFolder();
                     for (int i = 0; i < selectedFolderList.size(); i++) {
-                        parseFolder.deleteViaContentProvider(this,selectedFolderList.get(i));
+                        parseFolder.deleteViaContentProvider(this, selectedFolderList.get(i));
                     }
                     mFolderDetailFragment.findVideoDataList(mFolderDetailFragment.path);
                 }

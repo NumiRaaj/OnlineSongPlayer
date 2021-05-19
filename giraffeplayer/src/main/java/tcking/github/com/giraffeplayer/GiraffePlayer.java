@@ -27,17 +27,15 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
-
-import static tcking.github.com.giraffeplayer.FloatingWidgetService.EXTRA_VIDEO_POSITION;
 
 /**
  * Created by tcking on 15/10/27.
@@ -758,6 +756,11 @@ public class GiraffePlayer {
         ///***********************
 
 
+        //To stop notification music if its running we will close
+        activity.startService(new Intent(activity, VideoPlayAsAudioService.class).setAction(VideoPlayAsAudioService.NOTIFICATION_CLICK_ACTION));
+        ///********************
+
+
     }
 
     public void playListPlayer(List<SongModel> listSongs, int currentListIndex) {
@@ -1008,7 +1011,7 @@ public class GiraffePlayer {
     }
 
     public void setUpFloatingScreen() {
-        setSongsCurrentValues();
+     /*   setSongsCurrentValues();
         int videoPosition = SharedPref.getInt(activity, SharedPref.PREF_CURRENT_PLAY_INDEX);
         if (Build.VERSION.SDK_INT < 23) {
 
@@ -1021,7 +1024,18 @@ public class GiraffePlayer {
         } else {
             askForSystemOverlayPermission();
             Toast.makeText(activity, "System Alert Window Permission Is Required For Floating Widget.", Toast.LENGTH_LONG).show();
-        }
+        }*/
+
+
+        DialogEqualizerFragment fragment = DialogEqualizerFragment.newBuilder()
+                .setAudioSessionId(sessionId)
+                .themeColor(ContextCompat.getColor(this, R.color.primaryColor))
+                .textColor(ContextCompat.getColor(this, R.color.textColor))
+                .accentAlpha(ContextCompat.getColor(this, R.color.playingCardColor))
+                .darkColor(ContextCompat.getColor(this, R.color.primaryDarkColor))
+                .setAccentColor(ContextCompat.getColor(this, R.color.secondaryColor))
+                .build();
+        fragment.show(getSupportFragmentManager(), "eq");
 
     }
 
