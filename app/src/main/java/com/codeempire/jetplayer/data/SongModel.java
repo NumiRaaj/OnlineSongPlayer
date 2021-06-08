@@ -1,4 +1,4 @@
-package com.example.myapplication.data;
+package com.codeempire.jetplayer.data;
 
 import java.io.Serializable;
 

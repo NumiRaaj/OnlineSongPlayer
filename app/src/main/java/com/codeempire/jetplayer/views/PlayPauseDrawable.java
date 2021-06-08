@@ -1,4 +1,4 @@
-package com.example.myapplication.views;
+package com.codeempire.jetplayer.views;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

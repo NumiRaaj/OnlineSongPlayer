@@ -1,4 +1,4 @@
-package com.example.myapplication.activity;
+package com.codeempire.jetplayer.activity;
 
 import android.os.Bundle;
 import android.view.ActionMode;
@@ -7,12 +7,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
 
-import com.example.myapplication.R;
-import com.example.myapplication.data.MediaFolder;
-import com.example.myapplication.fragment.FolderDetailFragment;
-import com.example.myapplication.fragment.FolderFragment;
-import com.example.myapplication.util.AlertDialogHelper;
-import com.example.myapplication.util.ParseFolder;
+import com.codeempire.jetplayer.R;
+import com.codeempire.jetplayer.data.MediaFolder;
+import com.codeempire.jetplayer.fragment.FolderDetailFragment;
+import com.codeempire.jetplayer.fragment.FolderFragment;
+import com.codeempire.jetplayer.util.AlertDialogHelper;
+import com.codeempire.jetplayer.util.ParseFolder;
 import com.noman.ads.AdsBanner;
 import com.noman.ads.AdsInterstitial;
 
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements AlertDialogHelper
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         alertDialogHelper = new AlertDialogHelper(this);
-        adsFullScreen2 = new AdsInterstitial("1", this); //intialize oncreate
+        adsFullScreen2 = new AdsInterstitial(SplashActivity.adType, this); //intialize oncreate
 
 
         adsFullScreen2.showActivityAd(null);
@@ -118,7 +118,14 @@ public class MainActivity extends AppCompatActivity implements AlertDialogHelper
         mFragmentTransaction = mFragmentManager.beginTransaction();
         mFragmentTransaction.add(R.id.container, new FolderFragment().getInstance(this)).commit();
 
-        new AdsBanner("1", this, (RelativeLayout) findViewById(R.id.ad_layout)); //Replace your banner add layout
+        new AdsBanner(SplashActivity.adType, this, (RelativeLayout) findViewById(R.id.ad_layout)); //Replace your banner add layout
+
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
 
 
     }

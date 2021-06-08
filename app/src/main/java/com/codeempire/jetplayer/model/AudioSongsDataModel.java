@@ -1,4 +1,4 @@
-package com.example.myapplication.model;
+package com.codeempire.jetplayer.model;
 
 
 public class AudioSongsDataModel {

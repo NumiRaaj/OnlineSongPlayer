@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.myapplication">
+    package="com.codeempire.jetplayer">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -21,11 +21,11 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="ca-app-pub-8728487193184778~2398852223" />
 
 
         <activity
-            android:name=".activity.SplashActivity"
+            android:name="com.codeempire.jetplayer.activity.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Splash">
             <intent-filter>
@@ -34,13 +34,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.PermissionActivity"
+            android:name="com.codeempire.jetplayer.activity.PermissionActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.MainActivity"
+            android:name="com.codeempire.jetplayer.activity.MainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.CustomPlayer"
+            android:name="com.codeempire.jetplayer.activity.CustomPlayer"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Splash" />
     </application>

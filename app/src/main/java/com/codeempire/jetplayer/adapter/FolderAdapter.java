@@ -1,4 +1,4 @@
-package com.example.myapplication.adapter;
+package com.codeempire.jetplayer.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,8 +8,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.myapplication.R;
-import com.example.myapplication.data.MediaFolder;
+import com.codeempire.jetplayer.R;
+import com.codeempire.jetplayer.data.MediaFolder;
 
 import java.util.ArrayList;
 import java.util.List;

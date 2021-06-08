@@ -27,15 +27,17 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
+
+import static tcking.github.com.giraffeplayer.VideoPlayAsAudioService.EXTRA_VIDEO_POSITION;
 
 /**
  * Created by tcking on 15/10/27.
@@ -71,8 +73,8 @@ public class GiraffePlayer {
     private static final int MESSAGE_SEEK_NEW_POSITION = 3;
     private static final int MESSAGE_HIDE_CENTER_BOX = 4;
     private static final int MESSAGE_RESTART_PLAY = 5;
-    private final Activity activity;
-    private IjkVideoView videoView;
+    private final AppCompatActivity activity;
+    public IjkVideoView videoView;
     private final SeekBar seekBar;
     private final AudioManager audioManager;
     private final int mMaxVolume;
@@ -96,7 +98,7 @@ public class GiraffePlayer {
 
     public boolean isMp3Song = false;
     public int currentListIndex;
-    private List<SongModel> listSongs;
+    public List<SongModel> listSongs;
 
     private int pauseTimeMedia = 0;
 
@@ -163,6 +165,8 @@ public class GiraffePlayer {
                         .show();
             } else if (v.getId() == R.id.app_video_fullscreen) {
                 toggleFullScreen();
+
+
             } else if (v.getId() == R.id.video_floating_mode) {
                 setUpFloatingScreen();
             } else if (v.getId() == R.id.app_video_play) {
@@ -175,19 +179,15 @@ public class GiraffePlayer {
                     play(listSongs.get(currentListIndex).getDATA());
                 } else {
                     //currentListIndex = 0;
-
                 }
 
             } else if (v.getId() == R.id.app_video_previous) {
-
-
                 if (currentListIndex > 0) {
                     currentListIndex--;
                     play(listSongs.get(currentListIndex).getDATA());
                 } else {
                     //  currentListIndex = 0;
                 }
-
             } else if (v.getId() == R.id.app_video_replay_icon) {
                 videoView.seekTo(0);
                 videoView.start();
@@ -334,7 +334,7 @@ public class GiraffePlayer {
         }
     }
 
-    public GiraffePlayer(final Activity activity) {
+    public GiraffePlayer(final AppCompatActivity activity) {
         try {
             IjkMediaPlayer.loadLibrariesOnce(null);
             IjkMediaPlayer.native_profileBegin("libijkplayer.so");
@@ -436,10 +436,10 @@ public class GiraffePlayer {
             setSongsCurrentValues();
             activity.stopService(new Intent(activity, VideoPlayAsAudioService.class));
             if (Build.VERSION.SDK_INT >= 26) {
-                activity.startForegroundService(new Intent(activity, VideoPlayAsAudioService.class).putExtra(VideoPlayAsAudioService.EXTRA_VIDEO_POSITION, videoView.getCurrentPosition()));
-                activity.startForegroundService(new Intent(activity, VideoPlayAsAudioService.class).putExtra(VideoPlayAsAudioService.EXTRA_VIDEO_POSITION, videoView.getCurrentPosition()));
+                activity.startForegroundService(new Intent(activity, VideoPlayAsAudioService.class).putExtra(EXTRA_VIDEO_POSITION, videoView.getCurrentPosition()));
+                activity.startForegroundService(new Intent(activity, VideoPlayAsAudioService.class).putExtra(EXTRA_VIDEO_POSITION, videoView.getCurrentPosition()));
             } else {
-                activity.startService(new Intent(activity, VideoPlayAsAudioService.class).putExtra(VideoPlayAsAudioService.EXTRA_VIDEO_POSITION, videoView.getCurrentPosition()));
+                activity.startService(new Intent(activity, VideoPlayAsAudioService.class).putExtra(EXTRA_VIDEO_POSITION, videoView.getCurrentPosition()));
             }
             activity.finish();
         }
@@ -495,6 +495,7 @@ public class GiraffePlayer {
         $.id(R.id.app_video_mute).visibility(show ? View.VISIBLE : View.GONE);
         $.id(R.id.video_background_play).visibility(show ? View.VISIBLE : View.GONE);
         $.id(R.id.app_video_crop).visibility(show ? View.VISIBLE : View.GONE);
+        $.id(R.id.app_video_equilizer).visibility(show ? View.VISIBLE : View.GONE);
 
     }
 
@@ -763,6 +764,13 @@ public class GiraffePlayer {
 
     }
 
+
+    public void playListOperate(int currentListIndex) {
+        this.currentListIndex = currentListIndex;
+        play(listSongs.get(currentListIndex).getDATA());
+
+    }
+
     public void playListPlayer(List<SongModel> listSongs, int currentListIndex) {
         this.currentListIndex = currentListIndex;
         this.listSongs = listSongs;
@@ -1011,7 +1019,7 @@ public class GiraffePlayer {
     }
 
     public void setUpFloatingScreen() {
-     /*   setSongsCurrentValues();
+        setSongsCurrentValues();
         int videoPosition = SharedPref.getInt(activity, SharedPref.PREF_CURRENT_PLAY_INDEX);
         if (Build.VERSION.SDK_INT < 23) {
 
@@ -1024,18 +1032,8 @@ public class GiraffePlayer {
         } else {
             askForSystemOverlayPermission();
             Toast.makeText(activity, "System Alert Window Permission Is Required For Floating Widget.", Toast.LENGTH_LONG).show();
-        }*/
+        }
 
-
-        DialogEqualizerFragment fragment = DialogEqualizerFragment.newBuilder()
-                .setAudioSessionId(sessionId)
-                .themeColor(ContextCompat.getColor(this, R.color.primaryColor))
-                .textColor(ContextCompat.getColor(this, R.color.textColor))
-                .accentAlpha(ContextCompat.getColor(this, R.color.playingCardColor))
-                .darkColor(ContextCompat.getColor(this, R.color.primaryDarkColor))
-                .setAccentColor(ContextCompat.getColor(this, R.color.secondaryColor))
-                .build();
-        fragment.show(getSupportFragmentManager(), "eq");
 
     }
 

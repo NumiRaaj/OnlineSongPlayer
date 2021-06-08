@@ -1,4 +1,4 @@
-package com.example.myapplication.data;
+package com.codeempire.jetplayer.data;
 
 public class PropertiesModel {
     private String duration;

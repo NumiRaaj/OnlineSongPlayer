@@ -1,4 +1,4 @@
-package com.example.myapplication.fragment;
+package com.codeempire.jetplayer.fragment;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -7,12 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.myapplication.R;
-import com.example.myapplication.activity.MainActivity;
-import com.example.myapplication.adapter.FolderAdapter;
-import com.example.myapplication.data.MediaFolder;
-import com.example.myapplication.util.ParseFolder;
-import com.example.myapplication.util.folderItemListClick;
+import com.codeempire.jetplayer.R;
+import com.codeempire.jetplayer.activity.MainActivity;
+import com.codeempire.jetplayer.adapter.FolderAdapter;
+import com.codeempire.jetplayer.data.MediaFolder;
+import com.codeempire.jetplayer.util.ParseFolder;
+import com.codeempire.jetplayer.util.folderItemListClick;
 
 import java.io.File;
 import java.util.ArrayList;

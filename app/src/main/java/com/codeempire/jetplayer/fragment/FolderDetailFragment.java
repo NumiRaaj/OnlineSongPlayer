@@ -1,4 +1,4 @@
-package com.example.myapplication.fragment;
+package com.codeempire.jetplayer.fragment;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -7,14 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.myapplication.R;
-import com.example.myapplication.activity.CustomPlayer;
-import com.example.myapplication.activity.MainActivity;
-import com.example.myapplication.adapter.FolderDetailAdapter;
-import com.example.myapplication.data.AudioModel;
-import com.example.myapplication.data.SongModel;
-import com.example.myapplication.util.ParseFolder;
-import com.example.myapplication.util.folderItemListClick;
+import com.codeempire.jetplayer.R;
+import com.codeempire.jetplayer.activity.CustomPlayer;
+import com.codeempire.jetplayer.activity.MainActivity;
+import com.codeempire.jetplayer.adapter.FolderDetailAdapter;
+import com.codeempire.jetplayer.data.AudioModel;
+import com.codeempire.jetplayer.data.SongModel;
+import com.codeempire.jetplayer.util.ParseFolder;
+import com.codeempire.jetplayer.util.folderItemListClick;
 
 import java.io.File;
 import java.io.Serializable;
@@ -187,4 +187,5 @@ public class FolderDetailFragment extends Fragment {
         mainActivity.mFolderDetailFragment = this;
         mainActivity.mFolderFragment = null;
     }
+
 }

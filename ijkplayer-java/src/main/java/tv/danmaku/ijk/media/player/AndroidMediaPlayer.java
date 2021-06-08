@@ -53,6 +53,7 @@ public class AndroidMediaPlayer extends AbstractMediaPlayer {
         synchronized (mInitLock) {
             mInternalMediaPlayer = new MediaPlayer();
         }
+
         mInternalMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mInternalListenerAdapter = new AndroidMediaPlayerListenerHolder(this);
         attachInternalListeners();

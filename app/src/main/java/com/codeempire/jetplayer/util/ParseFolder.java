@@ -1,4 +1,4 @@
-package com.example.myapplication.util;
+package com.codeempire.jetplayer.util;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

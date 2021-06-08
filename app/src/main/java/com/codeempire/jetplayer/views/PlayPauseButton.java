@@ -1,4 +1,4 @@
-package com.example.myapplication.views;
+package com.codeempire.jetplayer.views;
 
 import android.animation.ValueAnimator;
 import android.content.Context;

@@ -1,4 +1,4 @@
-package com.example.myapplication.adapter;
+package com.codeempire.jetplayer.adapter;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -12,9 +12,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.myapplication.R;
-import com.example.myapplication.data.SongModel;
-import com.example.myapplication.util.ParseFolder;
+import com.codeempire.jetplayer.R;
+import com.codeempire.jetplayer.data.SongModel;
+import com.codeempire.jetplayer.util.ParseFolder;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.example.myapplication.views;
+package com.codeempire.jetplayer.views;
 
 /**
  * Created by Administrator on 8/8/2017.

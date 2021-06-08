@@ -13,10 +13,12 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * Created by tcking on 15/10/27.
  */
-public class GiraffePlayerActivity extends Activity {
+public class GiraffePlayerActivity extends AppCompatActivity {
 
     GiraffePlayer player;
     static String EXTRA_IS_FLOATING_VIDEO = "isFromFloating";
