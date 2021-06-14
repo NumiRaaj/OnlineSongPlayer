@@ -64,6 +64,7 @@ public class CustomPlayer extends AppCompatActivity {
 
     }
 
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -92,6 +93,24 @@ public class CustomPlayer extends AppCompatActivity {
             model.setDISPLAY_NAME(songModelList.get(i).getDISPLAY_NAME());
             model.setDURATION(songModelList.get(i).getDURATION());
 
+
+            //Check song format
+            String url = songModelList.get(i).getDATA();
+            String filenameArray[] = url.split("\\.");
+            String extension = filenameArray[filenameArray.length - 1];
+            if (extension.equalsIgnoreCase("mp3") ||
+                    extension.equalsIgnoreCase("wav") ||
+                    extension.equalsIgnoreCase("m4a") ||
+                    extension.equalsIgnoreCase("aac")) {
+                model.setIsMp3(true);
+
+
+            } else {
+                model.setIsMp3(false);
+
+            }
+
+            ///*********************////
             list.add(model);
         }
 

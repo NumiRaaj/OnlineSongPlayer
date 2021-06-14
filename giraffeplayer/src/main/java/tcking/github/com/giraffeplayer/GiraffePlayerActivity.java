@@ -21,7 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class GiraffePlayerActivity extends AppCompatActivity {
 
     GiraffePlayer player;
-    static String EXTRA_IS_FLOATING_VIDEO = "isFromFloating";
+    public static String EXTRA_IS_FLOATING_VIDEO = "isFromFloating";
 
     public static Intent getInstance(Context context, boolean isFromFloating) {
         Intent intent = new Intent(context, GiraffePlayerActivity.class);
@@ -121,6 +121,7 @@ public class GiraffePlayerActivity extends AppCompatActivity {
 
     public void setVideoPlayerAfterFloating() {
         player.setFullScreenOnly(false);
+        player.tryFullScreen(true);
         player.playListPlayer(SharedPref.getVideoList(this),
                 SharedPref.getInt(this, SharedPref.PREF_CURRENT_PLAY_INDEX));
         player.seekTo(SharedPref.getInt(this, SharedPref.PREF_CURRENT_SEEK_POSITION), true);

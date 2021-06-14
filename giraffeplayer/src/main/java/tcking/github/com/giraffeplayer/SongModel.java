@@ -7,6 +7,15 @@ public class SongModel {
     public String SIZE;
     public String _ID;
     public int seekPostion;
+    public boolean isMp3;
+
+    public boolean getIsMp3() {
+        return isMp3;
+    }
+
+    public void setIsMp3(boolean isMp3) {
+        this.isMp3 = isMp3;
+    }
 
     public int getSeekPostion() {
         return seekPostion;
